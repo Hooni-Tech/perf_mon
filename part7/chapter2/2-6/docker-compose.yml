@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  master:
+    image: locustio/locust
+    ports:
+     - "8089:8089"
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://master:8089
+  
+  worker:
+    image: locustio/locust
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host master
+  postgres:
+    image: postgres
+    container_name: locust-db
+    restart: always
+    ports:
+      - "5440:5432"
+    environment:
+      - POSTGRES_DB=client
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
